@@ -122,8 +122,8 @@ if __name__=='__main__':
 
         X=[]
         y=[]
-        stream = FileStream('imbalance_dataset/synthesize3.csv')
-        with open('imbalance_dataset/synthesize3.csv', 'r') as file:
+        stream = FileStream('imbalance_dataset/synthesize7.csv')
+        with open('imbalance_dataset/synthesize7.csv', 'r') as file:
                 reader = csv.reader(file)
                 line_count = len(list(reader))
         for i in range(0, line_count-1):
@@ -201,13 +201,13 @@ if __name__=='__main__':
                              
                              #individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1],sample_weight=[1/(IR[y_test[j]]/(j+1))])
                              individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1],sample_weight=[(1+alpha*(1/(y_test[j]*(y_pred_p3[0][1])+(1-y_test[j])*(1-y_pred_p3[0][1]))-1))*1/(IR[y_test[j]]/(j+1))])
-                if ((j+1)%buffer_len==0):
-                        sample_x = X_test[j+1-buffer_len:j+1]
-                        sample_y = y_test[j+1-buffer_len:j+1]
-                        # IR1={0:buffer_len - np.count_nonzero(sample_y),1:np.count_nonzero(sample_y)}
-                        IR1={0:IR[0]/((j+1)/buffer_len),1:IR[1]/((j+1)/buffer_len)}
-                        alpha,_=differential_evolution(objective_function, bounds, IR1, copy.deepcopy(test_clf))
-                        test_clf=copy.deepcopy(individual[2].clf)
+                # if ((j+1)%buffer_len==0):
+                #         sample_x = X_test[j+1-buffer_len:j+1]
+                #         sample_y = y_test[j+1-buffer_len:j+1]
+                #         # IR1={0:buffer_len - np.count_nonzero(sample_y),1:np.count_nonzero(sample_y)}
+                #         IR1={0:IR[0]/((j+1)/buffer_len),1:IR[1]/((j+1)/buffer_len)}
+                #         alpha,_=differential_evolution(objective_function, bounds, IR1, copy.deepcopy(test_clf))
+                #         test_clf=copy.deepcopy(individual[2].clf)
                   
         ncol = 1
 
