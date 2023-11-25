@@ -122,8 +122,8 @@ if __name__=='__main__':
 
         X=[]
         y=[]
-        stream = FileStream('imbalance_dataset/synthesize2.csv')
-        with open('imbalance_dataset/synthesize2.csv', 'r') as file:
+        stream = FileStream('imbalance_dataset/synthesize3.csv')
+        with open('imbalance_dataset/synthesize3.csv', 'r') as file:
                 reader = csv.reader(file)
                 line_count = len(list(reader))
         for i in range(0, line_count-1):
@@ -132,7 +132,7 @@ if __name__=='__main__':
                 y.append(int(label[0]))
         X=np.array(X)
         y=np.array(y)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1-1/(line_count-1), random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1-100/(line_count-1), random_state=42)
         
         nb_all=len(y)
         test_len=X_test.shape[0]
@@ -179,7 +179,7 @@ if __name__=='__main__':
                 y_pred_p2=individual[1].clf.predict_proba(X_test[j].reshape(1,-1))
                 y_pred3 = individual[2].clf.predict(X_test[j].reshape(1,-1))
                 y_pred_p3=individual[2].clf.predict_proba(X_test[j].reshape(1,-1))
-
+                print(y_pred_p3)
                 test_label = y_test[j]
                 test_label = np.expand_dims(test_label, 0)
                 test_pre1=y_pred1
@@ -230,7 +230,7 @@ if __name__=='__main__':
         print(gmean1[-1])
         print(gmean2[-1])
         print(gmean3[-1])
-        plot_x = range(nb_all - 1)
+        plot_x = range(nb_all - 100)
         plot_y1 = gmean1 
         plot_y2 = gmean2
         plot_y3 = gmean3
