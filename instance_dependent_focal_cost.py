@@ -39,10 +39,10 @@ X_test=[]
 y_train=[] 
 y_test=[] 
 class_num=2
-alpha=2.00
-buffer_len=50
+alpha=1.00
+buffer_len=100
 np.random.seed(1234)
-bounds = (0, 5)
+bounds = (0, 1)
 
 sample_x=np.zeros(buffer_len)
 sample_y=np.zeros(buffer_len)
@@ -85,8 +85,8 @@ def objective_function(x,IR1,test_clf):
                      p_t=y_pred_ptest[0][1]
                 else:
                      p_t=y_pred_ptest[0][0] 
-                FC=-class_dependent_cost*((1-p_t)**x)*np.log(p_t)
-                if (y_pred_ptest[0][0]!=y_pred_ptest[0][1]):
+                FC=class_dependent_cost*(-((np.abs(p_t-0.5))**x)*np.log(np.abs(p_t-0.5)))
+                if (y_pred_ptest[0][0]!=y_pred_ptest[0][1] and y_pred_ptest[0][0]!=1 and y_pred_ptest[0][1]!=1):
                     test_clf.partial_fit(instance_x[j].reshape(1, -1), [instance_y[j]], classes=[0, 1],sample_weight=[FC])
                 else:
                     test_clf.partial_fit(instance_x[j].reshape(1, -1), [instance_y[j]], classes=[0, 1],sample_weight=[class_dependent_cost])
@@ -133,7 +133,7 @@ if __name__=='__main__':
 
         X=[]
         y=[]
-        dataset="synthesize6"
+        dataset="synthesize8"
         stream = FileStream(f'imbalance_dataset/{dataset}.csv')
         with open(f'imbalance_dataset/{dataset}.csv', 'r') as file:
                 reader = csv.reader(file)
@@ -262,9 +262,9 @@ if __name__=='__main__':
         plot_y3 = gmean3
         ax1.plot(plot_x, plot_y1, color='blue',label='no processing')
         ax1.plot(plot_x, plot_y2, color='green',label='class-dependent cost')
-        ax1.plot(plot_x, plot_y3, color='red',label='instance-dependent cost')
+        ax1.plot(plot_x, plot_y3, color='red',label=f'instance-dependent cost, alpha={alpha}')
         
         ax1.legend(fontsize=legendsize, ncol=ncol) 
-        plt.savefig(f'results/synthesize/{dataset}_instance_dependent_focal_cost.png')
+        plt.savefig(f'results/synthesize/{dataset}_instance_dependent_focal_cost_alpha={alpha}.png')
         plt.show()
        
