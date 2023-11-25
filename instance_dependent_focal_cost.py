@@ -43,7 +43,7 @@ alpha=1.00
 buffer_len=100
 np.random.seed(1234)
 bounds = (0, 1)
-
+pretrain = 100
 sample_x=np.zeros(buffer_len)
 sample_y=np.zeros(buffer_len)
 S = np.zeros([class_num])
@@ -80,22 +80,10 @@ def objective_function(x,IR1,test_clf):
                 recall[j, :], gmean[j], S, N = evaluation_online.pf_online(S, N,test_label,test_pre)
                 cf = evaluation_online.confusion_online(cf, test_label, test_pre)
                 class_dependent_cost=1/(IR1[instance_y[j]]/(buffer_len))
-                p_t=0
-                if (instance_y[j]==1):
-                     p_t=y_pred_ptest[0][1]
-                else:
-                     p_t=y_pred_ptest[0][0] 
+                p_t=y_pred_ptest[0][instance_y[j]]
                 FC=class_dependent_cost*(-((np.abs(p_t-0.5))**x)*np.log(np.abs(p_t-0.5)))
-                if (y_pred_ptest[0][0]!=y_pred_ptest[0][1] and y_pred_ptest[0][0]!=1 and y_pred_ptest[0][1]!=1):
-                    test_clf.partial_fit(instance_x[j].reshape(1, -1), [instance_y[j]], classes=[0, 1],sample_weight=[FC])
-                else:
-                    test_clf.partial_fit(instance_x[j].reshape(1, -1), [instance_y[j]], classes=[0, 1],sample_weight=[class_dependent_cost])
-                # if (y_pred_test[0]!=instance_y[j]):
-                #              test_clf.partial_fit(instance_x[j].reshape(1, -1), [instance_y[j]], classes=[0, 1],sample_weight=[(1+x*(1/(instance_y[j]*(1-y_pred_ptest[0][1])+(1-instance_y[j])*(y_pred_ptest[0][1]))-1))*1/(IR1[instance_y[j]]/(buffer_len))])
-                # else: 
-                #              test_clf.partial_fit(instance_x[j].reshape(1, -1), [instance_y[j]], classes=[0, 1],sample_weight=[(1+x*(1/(instance_y[j]*(y_pred_ptest[0][1])+(1-instance_y[j])*(1-y_pred_ptest[0][1]))-1))*1/(IR1[instance_y[j]]/(buffer_len))])
-                #              #test_clf.partial_fit(instance_x[j].reshape(1, -1), [instance_y[j]], classes=[0, 1],sample_weight=[1/(IR1[instance_y[j]]/(buffer_len))])
-                 
+                test_clf.partial_fit(instance_x[j].reshape(1, -1), [instance_y[j]], classes=[0, 1],sample_weight=[FC])
+                
     return gmean[-1]
 
 def differential_evolution(objective_function, bounds, IR1, test_clf, population_size=10, max_generations=2, mutation_factor=0.5, crossover_probability=0.7):
@@ -144,7 +132,7 @@ if __name__=='__main__':
                 y.append(int(label[0]))
         X=np.array(X)
         y=np.array(y)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1-100/(line_count-1), random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1-pretrain/(line_count-1), random_state=42)
         
         nb_all=len(y)
         test_len=X_test.shape[0]
@@ -207,26 +195,11 @@ if __name__=='__main__':
                 IR[y_test[j]]+=1
                 class_dependent_cost=1/(IR[y_test[j]]/(j+1))
                 individual[0].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1])
-                individual[1].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1],sample_weight=[class_dependent_cost])
-                p_t=0
-                if (y_test[j]==1):
-                     p_t=y_pred_p3[0][1]
-                else:
-                     p_t=y_pred_p3[0][0] 
-                print(y_test[j], y_pred_p3, p_t)
-                #((1-p_t)**alpha)
+                individual[1].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1], sample_weight=[class_dependent_cost])
+                p_t=y_pred_p3[0][y_test[j]]
                 FC=class_dependent_cost*(-((np.abs(p_t-0.5))**alpha)*np.log(np.abs(p_t-0.5)))
-                print(FC)
-                if (y_pred_p3[0][0]!=y_pred_p3[0][1] and y_pred_p3[0][0]!=1 and y_pred_p3[0][1]!=1):
-                      individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1],sample_weight=[FC])
-                else:
-                      individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1],sample_weight=[class_dependent_cost])
-                # if (y_pred3[0]!=y_test[j]):
-                #              individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1],sample_weight=[(1+alpha*(1/(y_test[j]*(1-y_pred_p3[0][1])+(1-y_test[j])*(y_pred_p3[0][1]))-1))*1/(IR[y_test[j]]/(j+1))])
-                # else: 
-                             
-                #              #individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1],sample_weight=[1/(IR[y_test[j]]/(j+1))])
-                #              individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1],sample_weight=[(1+alpha*(1/(y_test[j]*(y_pred_p3[0][1])+(1-y_test[j])*(1-y_pred_p3[0][1]))-1))*1/(IR[y_test[j]]/(j+1))])
+                individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1], sample_weight=[FC])
+                # #use DE
                 # if ((j+1)%buffer_len==0):
                 #         sample_x = X_test[j+1-buffer_len:j+1]
                 #         sample_y = y_test[j+1-buffer_len:j+1]
@@ -256,7 +229,7 @@ if __name__=='__main__':
         print(gmean1[-1])
         print(gmean2[-1])
         print(gmean3[-1])
-        plot_x = range(nb_all - 100)
+        plot_x = range(nb_all - pretrain)
         plot_y1 = gmean1 
         plot_y2 = gmean2
         plot_y3 = gmean3
