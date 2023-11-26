@@ -39,7 +39,7 @@ X_test=[]
 y_train=[] 
 y_test=[] 
 class_num=2
-alpha=2.00
+alpha=1.00
 buffer_len=100
 np.random.seed(1234)
 bounds = (0, 1)
@@ -81,7 +81,7 @@ def objective_function(x,IR1,test_clf):
                 cf = evaluation_online.confusion_online(cf, test_label, test_pre)
                 class_dependent_cost=1/(IR1[instance_y[j]]/(buffer_len))
                 p_t=y_pred_ptest[0][instance_y[j]]
-                FC=class_dependent_cost*(-((np.abs(p_t-0.5))**x)*np.log(np.abs(p_t-0.5)))
+                FC=class_dependent_cost*(-np.abs(p_t-0.5))*np.log(np.abs(p_t-0.5))*(1-p_t)**x
                 test_clf.partial_fit(instance_x[j].reshape(1, -1), [instance_y[j]], classes=[0, 1],sample_weight=[FC])
                 
     return gmean[-1]
@@ -121,7 +121,7 @@ if __name__=='__main__':
 
         X=[]
         y=[]
-        dataset="synthesize6"
+        dataset="synthesize7"
         stream = FileStream(f'imbalance_dataset/{dataset}.csv')
         with open(f'imbalance_dataset/{dataset}.csv', 'r') as file:
                 reader = csv.reader(file)
@@ -203,8 +203,10 @@ if __name__=='__main__':
                 #FC=class_dependent_cost*(-2*(np.abs(p_t-0.5))*np.log(2*np.abs(p_t-0.5)))
                 #*( -(np.abs(p_t-alpha))*np.log(np.abs(p_t-alpha))-(np.abs((1-p_t)-alpha))*np.log(np.abs((1-p_t)-alpha)))
                 #alpha=0.00001
-                # 
+                
+                # FC=class_dependent_cost*(-np.abs(p_t-0.5))*np.log(np.abs(p_t-0.5))*(1-p_t)**alpha
                 FC=class_dependent_cost*(-np.abs(p_t-0.5))*np.log(np.abs(p_t-0.5))*(1-p_t)**0.75
+
                 # FC=0.5*class_dependent_cost*(-(np.abs(p_t-alpha))*np.log(np.abs(p_t-alpha))-(np.abs((1-p_t)-alpha))*np.log(np.abs((1-p_t)-alpha)))
                 individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1], sample_weight=[FC])
                 # #use DE
