@@ -43,7 +43,7 @@ alpha=1.00
 buffer_len=100
 np.random.seed(1234)
 bounds = (0, 1)
-pretrain = 100
+pretrain = 1
 sample_x=np.zeros(buffer_len)
 sample_y=np.zeros(buffer_len)
 def initialize1():
@@ -119,7 +119,7 @@ if __name__=='__main__':
         '''
         ./imbalance_dataset/synthesize/{dataset}.csv
         '''
-        dataset="synthesize7"
+        dataset="synthesize8"
         stream = FileStream(f'imbalance_dataset/synthesize/{dataset}.csv')
         with open(f'imbalance_dataset/synthesize/{dataset}.csv', 'r') as file:
                 reader = csv.reader(file)
@@ -187,7 +187,7 @@ if __name__=='__main__':
         gmean3 = np.zeros([test_len])
 
         for i in range(POPSIZE):
-             individual[i].clf.partial_fit(X_train, y_train)     
+             individual[i].clf.partial_fit(X_train, y_train,classes=list(range(class_num)))     
         total0=0
         total1=1
         TP=0
@@ -217,20 +217,21 @@ if __name__=='__main__':
                 class_size[y_test[j]]+=1
                 #class_dependent_cost=IR[1-y_test[j]]/(j+1)
                 class_dependent_cost=1/(class_size[y_test[j]]/(len(y_train)+j+1))
-                individual[0].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]])
-                individual[1].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], sample_weight=[class_dependent_cost])
+                individual[0].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]],classes=list(range(class_num)))
+                individual[1].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]],classes=list(range(class_num)), sample_weight=[class_dependent_cost])
                 p_t=y_pred_p3[0][y_test[j]]
                 #FC=1/(IR[y_test[j]]/(j+1))*(-((np.abs(p_t-0.5))**alpha)*np.log(np.abs(p_t-0.5)))
                 #FC=class_dependent_cost*(-((np.abs(p_t-0.5))**alpha)*np.log(np.abs(p_t-0.5)))*(1-p_t)
                 #FC=class_dependent_cost*(-2*(np.abs(p_t-0.5))*np.log(2*np.abs(p_t-0.5)))
                 #*( -(np.abs(p_t-alpha))*np.log(np.abs(p_t-alpha))-(np.abs((1-p_t)-alpha))*np.log(np.abs((1-p_t)-alpha)))
-                #alpha=0.00001
+                alpha=0.000001
                 
                 # FC=class_dependent_cost*(-np.abs(p_t-0.5))*np.log(np.abs(p_t-0.5))*(1-p_t)**alpha
-                FC=class_dependent_cost*(-np.abs(p_t-0.5))*np.log(np.abs(p_t-0.5))*(1-p_t)**0.75
+                FC=class_dependent_cost*(-np.abs(p_t-0.5+alpha))*np.log(np.abs(p_t-0.5+alpha))*(1-p_t)**0.75
+                #print(FC)
 
                 # FC=0.5*class_dependent_cost*(-(np.abs(p_t-alpha))*np.log(np.abs(p_t-alpha))-(np.abs((1-p_t)-alpha))*np.log(np.abs((1-p_t)-alpha)))
-                individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], sample_weight=[FC])
+                individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]],classes=list(range(class_num)), sample_weight=[FC])
                 # #use DE
                 # if ((j+1)%buffer_len==0):
                 #         sample_x = X_test[j+1-buffer_len:j+1]
