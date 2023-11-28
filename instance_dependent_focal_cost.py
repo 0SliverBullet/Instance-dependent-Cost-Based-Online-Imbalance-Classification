@@ -13,6 +13,7 @@ from skmultiflow.data import FileStream
 from skmultiflow.trees import HoeffdingTreeClassifier 
 import evaluation_online
 import csv
+import scipy.io as sio
 
 class indi:
     def __init__(self):
@@ -38,7 +39,6 @@ X_train=[]
 X_test=[] 
 y_train=[] 
 y_test=[] 
-class_num=2
 alpha=1.00
 buffer_len=100
 np.random.seed(1234)
@@ -46,11 +46,6 @@ bounds = (0, 1)
 pretrain = 100
 sample_x=np.zeros(buffer_len)
 sample_y=np.zeros(buffer_len)
-S = np.zeros([class_num])
-N = np.zeros([class_num])
-cf = np.zeros([class_num, class_num])
-recall = np.zeros([buffer_len, class_num])
-gmean = np.zeros([buffer_len])
 def initialize1():
     for i in range(POPSIZE):
         individual[i].x[0]=1
@@ -121,9 +116,12 @@ if __name__=='__main__':
 
         X=[]
         y=[]
+        '''
+        ./imbalance_dataset/synthesize/{dataset}.csv
+        '''
         dataset="synthesize7"
-        stream = FileStream(f'imbalance_dataset/{dataset}.csv')
-        with open(f'imbalance_dataset/{dataset}.csv', 'r') as file:
+        stream = FileStream(f'imbalance_dataset/synthesize/{dataset}.csv')
+        with open(f'imbalance_dataset/synthesize/{dataset}.csv', 'r') as file:
                 reader = csv.reader(file)
                 line_count = len(list(reader))
         for i in range(0, line_count-1):
@@ -132,8 +130,35 @@ if __name__=='__main__':
                 y.append(int(label[0]))
         X=np.array(X)
         y=np.array(y)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1-pretrain/(line_count-1), random_state=42)
+        '''
+        ./imbalance_dataset/chess/data.mat
+        '''
+
+        # file_name = './imbalance_dataset/chess/data.mat'
+        # data = sio.loadmat(file_name)
+        # X = data['X']
+        # X = X[:, :-1]
+        # y = data['y']
+        # X = X.astype(np.double)
+        # y = y.astype(np.int32)
+        # X = np.squeeze(X)
+        # y = np.squeeze(y)
+        # line_count = len(X)
         
+        # print(len(X), len(y))
+
+        class_num = len(np.unique(y))
+        class_size = np.zeros(class_num)
+        S = np.zeros([class_num])
+        N = np.zeros([class_num])
+        cf = np.zeros([class_num, class_num])
+        recall = np.zeros([buffer_len, class_num])
+        gmean = np.zeros([buffer_len])
+
+ 
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1-pretrain/(line_count-1), random_state=42)
+        for i in range(class_num):
+            class_size[i] = len(np.argwhere(y_train == i))
         nb_all=len(y)
         test_len=X_test.shape[0]
         class_num=len(np.unique(y))
@@ -161,10 +186,8 @@ if __name__=='__main__':
         recall3 = np.zeros([test_len, class_num])
         gmean3 = np.zeros([test_len])
 
-        IR={0:0,1:0}
-        X, y= stream.next_sample()
         for i in range(POPSIZE):
-             individual[i].clf.partial_fit(X_train, y_train, classes=[0, 1])     
+             individual[i].clf.partial_fit(X_train, y_train)     
         total0=0
         total1=1
         TP=0
@@ -172,7 +195,6 @@ if __name__=='__main__':
         test_clf=copy.deepcopy(individual[2].clf)
         for j in range(X_test.shape[0]):
                 print(j)
-
                 y_pred1 = individual[0].clf.predict(X_test[j].reshape(1,-1))
                 y_pred_p1=individual[0].clf.predict_proba(X_test[j].reshape(1,-1))
                 y_pred2= individual[1].clf.predict(X_test[j].reshape(1,-1))
@@ -192,11 +214,11 @@ if __name__=='__main__':
                 recall3[j, :], gmean3[j], S3, N3 = evaluation_online.pf_online(S3, N3,test_label,test_pre3)
                 cf3 = evaluation_online.confusion_online(cf3, test_label, test_pre3)
 
-                IR[y_test[j]]+=1
+                class_size[y_test[j]]+=1
                 #class_dependent_cost=IR[1-y_test[j]]/(j+1)
-                class_dependent_cost=1/(IR[y_test[j]]/(j+1))
-                individual[0].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1])
-                individual[1].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1], sample_weight=[class_dependent_cost])
+                class_dependent_cost=1/(class_size[y_test[j]]/(len(y_train)+j+1))
+                individual[0].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]])
+                individual[1].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], sample_weight=[class_dependent_cost])
                 p_t=y_pred_p3[0][y_test[j]]
                 #FC=1/(IR[y_test[j]]/(j+1))*(-((np.abs(p_t-0.5))**alpha)*np.log(np.abs(p_t-0.5)))
                 #FC=class_dependent_cost*(-((np.abs(p_t-0.5))**alpha)*np.log(np.abs(p_t-0.5)))*(1-p_t)
@@ -208,7 +230,7 @@ if __name__=='__main__':
                 FC=class_dependent_cost*(-np.abs(p_t-0.5))*np.log(np.abs(p_t-0.5))*(1-p_t)**0.75
 
                 # FC=0.5*class_dependent_cost*(-(np.abs(p_t-alpha))*np.log(np.abs(p_t-alpha))-(np.abs((1-p_t)-alpha))*np.log(np.abs((1-p_t)-alpha)))
-                individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], classes=[0, 1], sample_weight=[FC])
+                individual[2].clf.partial_fit(X_test[j].reshape(1, -1), [y_test[j]], sample_weight=[FC])
                 # #use DE
                 # if ((j+1)%buffer_len==0):
                 #         sample_x = X_test[j+1-buffer_len:j+1]
@@ -233,7 +255,7 @@ if __name__=='__main__':
         plt.xlabel('Time step', fontsize=fontsize)
         plt.tick_params(labelsize=limsize)
         plt.grid()
-        plt.title(f'Gmean_score over {dataset}.csv in online imbalance learning')
+        #plt.title(f'Gmean_score over {dataset}.csv in online imbalance learning')
 
 
         print(gmean1[-1])
