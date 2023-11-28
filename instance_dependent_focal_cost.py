@@ -9,11 +9,9 @@ from imblearn.metrics import geometric_mean_score
 from sklearn.metrics import f1_score
 from sklearn.linear_model import LogisticRegression
 np.float = float
-from skmultiflow.data import FileStream
 from skmultiflow.trees import HoeffdingTreeClassifier 
 import evaluation_online
-import csv
-import scipy.io as sio
+import read_data
 
 class indi:
     def __init__(self):
@@ -114,39 +112,11 @@ def differential_evolution(objective_function, bounds, IR1, test_clf, population
 
 if __name__=='__main__':
 
-        X=[]
-        y=[]
-        '''
-        ./imbalance_dataset/synthesize/{dataset}.csv
-        '''
-        dataset="synthesize8"
-        stream = FileStream(f'imbalance_dataset/synthesize/{dataset}.csv')
-        with open(f'imbalance_dataset/synthesize/{dataset}.csv', 'r') as file:
-                reader = csv.reader(file)
-                line_count = len(list(reader))
-        for i in range(0, line_count-1):
-                feature, label = stream.next_sample()
-                X.append(feature[0])
-                y.append(int(label[0]))
-        X=np.array(X)
-        y=np.array(y)
-        '''
-        ./imbalance_dataset/chess/data.mat
-        '''
+        datasets=['synthesize8','chess','yeast1','segment0']
+        dataset=datasets[0]
+        X,y=read_data.read(dataset)
 
-        # file_name = './imbalance_dataset/chess/data.mat'
-        # data = sio.loadmat(file_name)
-        # X = data['X']
-        # X = X[:, :-1]
-        # y = data['y']
-        # X = X.astype(np.double)
-        # y = y.astype(np.int32)
-        # X = np.squeeze(X)
-        # y = np.squeeze(y)
-        # line_count = len(X)
-        
-        # print(len(X), len(y))
-
+        line_count = len(X) 
         class_num = len(np.unique(y))
         class_size = np.zeros(class_num)
         S = np.zeros([class_num])
@@ -256,7 +226,7 @@ if __name__=='__main__':
         plt.xlabel('Time step', fontsize=fontsize)
         plt.tick_params(labelsize=limsize)
         plt.grid()
-        #plt.title(f'Gmean_score over {dataset}.csv in online imbalance learning')
+        plt.title(f'Gmean_score over {dataset} in online imbalance learning')
 
 
         print(gmean1[-1])
