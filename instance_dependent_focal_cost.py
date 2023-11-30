@@ -112,9 +112,10 @@ def differential_evolution(objective_function, bounds, IR1, test_clf, population
 
 if __name__=='__main__':
 
-        datasets=['synthesize8','chess','yeast1','segment0']
-        dataset=datasets[0]
-        X,y=read_data.read(dataset)
+        datasets=['synthesize','chess','yeast','segment']
+        test_id=3
+        dataset=datasets[test_id]+'0-5-5tst'
+        X,y=read_data.read(datasets[test_id],dataset)
 
         line_count = len(X) 
         class_num = len(np.unique(y))
@@ -130,6 +131,12 @@ if __name__=='__main__':
         for i in range(class_num):
             class_size[i] = len(np.argwhere(y_train == i))
         nb_all=len(y)
+
+        _size = np.zeros(class_num)
+        for i in range(class_num):
+            _size[i] = len(np.argwhere(y == i))   
+        print(_size)
+
         test_len=X_test.shape[0]
         class_num=len(np.unique(y))
 
@@ -164,7 +171,7 @@ if __name__=='__main__':
         TN=0
         test_clf=copy.deepcopy(individual[2].clf)
         for j in range(X_test.shape[0]):
-                print(j)
+                #print(j)
                 y_pred1 = individual[0].clf.predict(X_test[j].reshape(1,-1))
                 y_pred_p1=individual[0].clf.predict_proba(X_test[j].reshape(1,-1))
                 y_pred2= individual[1].clf.predict(X_test[j].reshape(1,-1))
@@ -177,6 +184,7 @@ if __name__=='__main__':
                 test_pre1=y_pred1
                 test_pre2=y_pred2
                 test_pre3=y_pred3
+                print(j,y_pred_p3,y_pred3,y_test[j])
                 recall1[j, :], gmean1[j], S1, N1 = evaluation_online.pf_online(S1, N1,test_label,test_pre1)
                 cf1 = evaluation_online.confusion_online(cf1, test_label, test_pre1)
                 recall2[j, :], gmean2[j], S2, N2 = evaluation_online.pf_online(S2, N2,test_label,test_pre2)
@@ -193,11 +201,14 @@ if __name__=='__main__':
                 #FC=1/(IR[y_test[j]]/(j+1))*(-((np.abs(p_t-0.5))**alpha)*np.log(np.abs(p_t-0.5)))
                 #FC=class_dependent_cost*(-((np.abs(p_t-0.5))**alpha)*np.log(np.abs(p_t-0.5)))*(1-p_t)
                 #FC=class_dependent_cost*(-2*(np.abs(p_t-0.5))*np.log(2*np.abs(p_t-0.5)))
-                #*( -(np.abs(p_t-alpha))*np.log(np.abs(p_t-alpha))-(np.abs((1-p_t)-alpha))*np.log(np.abs((1-p_t)-alpha)))
+                #
                 alpha=0.000001
-                
+                # if y_pred3!=y_test[j]:
+                #      FC=class_dependent_cost*(1+p_t)
+                # else:
+                FC=class_dependent_cost*(1+(1-p_t))
                 # FC=class_dependent_cost*(-np.abs(p_t-0.5))*np.log(np.abs(p_t-0.5))*(1-p_t)**alpha
-                FC=class_dependent_cost*(-np.abs(p_t-0.5+alpha))*np.log(np.abs(p_t-0.5+alpha))*(1-p_t)**0.75
+                # FC=class_dependent_cost*(-np.abs(p_t-0.5+alpha))*np.log(np.abs(p_t-0.5+alpha))*(1-p_t)**0.75
                 #print(FC)
 
                 # FC=0.5*class_dependent_cost*(-(np.abs(p_t-alpha))*np.log(np.abs(p_t-alpha))-(np.abs((1-p_t)-alpha))*np.log(np.abs((1-p_t)-alpha)))
@@ -238,9 +249,9 @@ if __name__=='__main__':
         plot_y3 = gmean3
         ax1.plot(plot_x, plot_y1, color='blue',label='no processing')
         ax1.plot(plot_x, plot_y2, color='green',label='class-dependent cost')
-        ax1.plot(plot_x, plot_y3, color='red',label=f'instance-dependent cost, alpha={alpha}')
+        ax1.plot(plot_x, plot_y3, color='red',label='instance-dependent cost')
         
         ax1.legend(fontsize=legendsize, ncol=ncol) 
-        #plt.savefig(f'results/synthesize/{dataset}_instance_dependent_focal_cost_alpha={alpha}.png')
+        plt.savefig(f'results/{datasets[test_id]}/{dataset}_instance_dependent_focal_cost.png')
         plt.show()
        

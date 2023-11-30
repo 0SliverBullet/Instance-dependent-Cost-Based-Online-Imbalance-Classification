@@ -10,13 +10,13 @@ import warnings
 warnings.filterwarnings('ignore')
 warnings.warn('DelftStack')
 warnings.warn('Do not show this message')
-def read(dataset):
+def read(datasets,dataset):
         X=[]
         y=[]
         '''
         ./imbalance_dataset/synthesize/{dataset}.csv
         '''
-        if dataset[:-1]=='synthesize':
+        if datasets=='synthesize':
             stream = FileStream(f'imbalance_dataset/synthesize/{dataset}.csv')
             with open(f'imbalance_dataset/synthesize/{dataset}.csv', 'r') as file:
                     reader = csv.reader(file)
@@ -34,11 +34,10 @@ def read(dataset):
         '''
         ./imbalance_dataset/chess/data.mat
         '''
-        if dataset =='chess':
+        if datasets =='chess':
             file_name = './imbalance_dataset/chess/data.mat'
             data = sio.loadmat(file_name)
             X = data['X']
-            X = X[:, :-1]
             y = data['y']
             X = X.astype(np.double)
             y = y.astype(np.int32)
@@ -51,9 +50,9 @@ def read(dataset):
         ./imbalance_dataset/yeast1/yeast1.dat
         '''       
         
-        if dataset =='yeast1':
+        if datasets =='yeast':
                 # 打开数据集文件
-                with open('./imbalance_dataset/yeast1/yeast1.dat', 'r') as file:
+                with open(f'./imbalance_dataset/{datasets}1/{dataset}.dat', 'r') as file:
                     # 逐行读取数据
                     data = file.readlines()
 
@@ -82,9 +81,9 @@ def read(dataset):
         '''
         ./imbalance_dataset/segment0/segment0.dat
         '''       
-        if dataset =='segment0':
+        if datasets =='segment':
                 # 打开数据集文件
-                with open('./imbalance_dataset/segment0/segment0.dat', 'r') as file:
+                with open(f'./imbalance_dataset/{datasets}0/{dataset}.dat', 'r') as file:
                     # 逐行读取数据
                     data = file.readlines()
 
