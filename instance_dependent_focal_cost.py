@@ -113,8 +113,8 @@ def differential_evolution(objective_function, bounds, IR1, test_clf, population
 if __name__=='__main__':
 
         datasets=['synthesize','chess','yeast','segment']
-        test_id=3
-        dataset=datasets[test_id]+'0-5-5tst'
+        test_id=0
+        dataset=datasets[test_id]+'8'
         X,y=read_data.read(datasets[test_id],dataset)
 
         line_count = len(X) 
@@ -206,9 +206,9 @@ if __name__=='__main__':
                 # if y_pred3!=y_test[j]:
                 #      FC=class_dependent_cost*(1+p_t)
                 # else:
-                FC=class_dependent_cost*(1+(1-p_t))
+                # FC=class_dependent_cost*(1+(1-p_t))
                 # FC=class_dependent_cost*(-np.abs(p_t-0.5))*np.log(np.abs(p_t-0.5))*(1-p_t)**alpha
-                # FC=class_dependent_cost*(-np.abs(p_t-0.5+alpha))*np.log(np.abs(p_t-0.5+alpha))*(1-p_t)**0.75
+                FC=class_dependent_cost*(-np.abs(p_t-0.5+alpha))*np.log(np.abs(p_t-0.5+alpha))*(1-p_t)**0.75
                 #print(FC)
 
                 # FC=0.5*class_dependent_cost*(-(np.abs(p_t-alpha))*np.log(np.abs(p_t-alpha))-(np.abs((1-p_t)-alpha))*np.log(np.abs((1-p_t)-alpha)))
@@ -252,6 +252,6 @@ if __name__=='__main__':
         ax1.plot(plot_x, plot_y3, color='red',label='instance-dependent cost')
         
         ax1.legend(fontsize=legendsize, ncol=ncol) 
-        plt.savefig(f'results/{datasets[test_id]}/{dataset}_instance_dependent_focal_cost.png')
+        plt.savefig(f'results/result0/{datasets[test_id]}/{dataset}_instance_dependent_focal_cost.png')
         plt.show()
        
