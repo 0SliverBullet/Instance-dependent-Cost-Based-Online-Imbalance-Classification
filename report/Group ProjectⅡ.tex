@@ -1,5 +1,5 @@
 \documentclass{article}
-
+\usepackage{multirow}
 
 %\usepackage{PRIMEarxiv}
 
@@ -77,7 +77,7 @@ Note that in algorithm 1 we take the prediction error into consideration when ca
 
 
 \begin{algorithm}
-	\caption{Heuristics Instance-dependent Cost Online classification}
+	\caption{Heuristics Instance-dependent Cost Online Classification 1}
 	\KwIn{Input data, Input Labels}
 	\KwOut{Prediction}
 	\While{Have more samples}{
@@ -145,35 +145,151 @@ Then the instance-dependent cost is redefined as
 \end{figure}
 
 The instance-dependent cost is visualized for several values of $\alpha$ $\in$
-[0.25, 4] in Figure 1. We note two properties of the instance-dependent cost.
+[0.25, 4] in \ref{fig:instance-dependent-cost-with-different-value-of-alpha}. We note two properties of the instance-dependent cost.
 (1) When an instance is misclassified and $p_t$ is small, the
 prediction error term nears to 1, which contributes a large instance-dependent cost. As
-$p_t$ nears to 1, the prediction error goes to 0 and the instance-dependent cost for well-classified instance is down-weighted to class-dependent cost. (2) The hypothesis parameter $\alpha$ smoothly adjusts the rate at which hard instances are focused on more.
+$p_t$ nears to 1, the prediction error goes to 0 and the instance-dependent cost for well-classified instance is down-weighted to class-dependent cost. (2) The hypothesis parameter $\alpha$ smoothly adjusts the rate at which hard instances are focused on more. Hence, compare with the former definition of prediction error focusing the instances with $p_t$ nears to 0.5, the new defintion of prediction error focuses on the instances with $p_t$ nears to 0, which are considered as hard instances, and slightly adjusted by the hypothesis parameter $\alpha$.
 
-\begin{figure}[h]
-	\begin{center}
-	\begin{tikzpicture}[node distance=10pt]
-		\node[draw, rounded corners]                        (start)   {new instance
-		};
-		\node[draw, below=of start]                         (step 1)  {Step 1};
-		\node[draw, below=of step 1]                        (step 2)  {Step 2};
-		\node[draw, diamond, aspect=2, below=of step 2]     (choice)  {Choice};
-		\node[draw, right=30pt of choice]                   (step x)  {Step X};
-		\node[draw, rounded corners, below=20pt of choice]  (end)     {End};
+The algorithm with new structure is describe as follows:
+
+\begin{algorithm}
+	\caption{Heuristics Instance-dependent Cost Online Classification 2}
+	\KwIn{Input data, Input Labels}
+	\KwOut{Prediction}
+	\While{Have more samples}{
+		datum, label <- next sample
 		
-		\draw[->] (start)  -- (step 1);
-		\draw[->] (step 1) -- (step 2);
-		\draw[->] (step 2) -- (choice);
-		\draw[->] (choice) -- node[left]  {Yes} (end);
-		\draw[->] (choice) -- node[above] {No}  (step x);
-		\draw[->] (step x) -- (step x|-step 2) -> (step 2);
-	\end{tikzpicture}
-	\end{center}
-	\caption{Flow chart}
-\end{figure}
+		prediction label $\hat{y}$  <-  Predict by current classifier
+		
+		y <- the true label of this sample
+		
+		current ratio of Class y: $CRC_y$ <- $\frac{\# \ of\ current samples\ with\ label\ y}{\# \ of\ all\ current\ samples}$ 
+		
+		Class-dependent Cost: $CDC_y$ <- $\frac{1}{CRC_y}$
+		
+		
+		\eIf{y is 1}{
+			$p_t$  <- p
+		}{
+		   	$p_t$  <- 1 - p
+		}
+			prediction error <- $(1-p_t)^\alpha$ 
+			
+			Instance-dependent Cost: $IDC$ <- (1+prediction error ) $\times$ $CDC_y$ 
+			
+			
+			train the classifier by fitting this instance with the heuristics instance-dependent cost
+		
+		
+		
+	}
+\end{algorithm}
+
 
 
 \section{Experiments}
+\subsubsection{Experimental Setup}
+In this subsection, we illustrate our experimental dataset setting, parameter setting, and comparison methods.
+
+For comparison method, we design a naive version of our method, which does not further fine-tuning on the human designed cost matrix. The human designed matrix is totally determined by tracked imbalance ratio .
+
+Following existing works of online class imbalance learning, we select Hoeffding Tree  as the base classifier and the number of base learners is set to $10$. We set the interval between each evolution $100$ data samples with a maximum generation of $5$ in each evolution process. The number of individuals are set to $20$ for all evolution processes. The metric we used for fitness evaluation is the difference between the maximum recall and the minimum recall.
+
+One part of the datasets "contraceptive", "segment0", "yeast-0-2-5-6 vs 3-7-8-9" and "yeast1" come from Keel repository .
+% Other real world datasets come from USP-DS repository \cite{souza2020challenges}. 
+Other datasets comes from synthesizing. All the dataset information are summarized in Table 1. Here IR means the imbalance ratio (ratio between instance number of maximum class and instance number of minimum class).
+
+The metric we used is online GMean following , which give instantaneous GMean for each time step. The overall GMean is calculated by simply averaging the GMean on every time steps.
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{|l||l|l|l|l|}
+		\hline
+		dataset & IR & \#instance & \#feature & \#class \\ \hline\hline
+		synthesize1 & 5.0 & 4800 & 30 & 2 \\ \hline
+		synthesize2 & 3.0 & 3000 & 10 & 3 \\ \hline
+		synthesize3 & 3.0 & 4000 & 10 & 2 \\ \hline
+		synthesize4 & 1.5 & 5000 & 10 & 2 \\ \hline
+		synthesize5 & 3.0 & 4000 & 10 & 2 \\ \hline
+		contraceptive & 1.889 & 1473 & 9 & 3 \\ \hline
+		segment0 & 6.015 & 2308 & 19 & 2 \\ \hline
+		yeast-0-2-5-6 vs 3-7-8-9 & 9.141 & 1004 & 8 & 2 \\ \hline
+		yeast1 & 2.459 & 1484 & 8 & 2 \\ \hline
+	\end{tabular}
+	\label{tab:overview}
+	\caption{Overview of used datasets}
+\end{table}
+
+
+
+\subsubsection{Overall Performance Comparison}
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{|c||c|ccccc|}
+		\hline
+		\multirow{2}{*}{datasets} & \multirow{2}{*}{class-dependent cost} & \multicolumn{5}{c|}{instance-dependent cost}                                                                                                                           \\ \cline{3-7} 
+		&                                       & \multicolumn{1}{c|}{$\alpha$=0.25}         & \multicolumn{1}{c|}{$\alpha$=0.5}          & \multicolumn{1}{c|}{$\alpha$=1}            & \multicolumn{1}{c|}{$\alpha$=2}            & $\alpha$=4            \\ \hline \hline
+		synthesize1               & 0.897                                 & \multicolumn{1}{c|}{0.899}          & \multicolumn{1}{c|}{\textbf{0.901}} & \multicolumn{1}{c|}{0.899}          & \multicolumn{1}{c|}{0.899}          & 0.897          \\ \hline
+		synthesize2               & 0.741                                 & \multicolumn{1}{c|}{0.730}          & \multicolumn{1}{c|}{0.656}          & \multicolumn{1}{c|}{\textbf{0.751}} & \multicolumn{1}{c|}{\textbf{0.751}} & 0.745          \\ \hline
+		synthesize3               & 0.831                                 & \multicolumn{1}{c|}{\textbf{0.841}} & \multicolumn{1}{c|}{0.818}          & \multicolumn{1}{c|}{0.809}          & \multicolumn{1}{c|}{0.827}          & 0.833          \\ \hline
+		synthesize4               & 0.757                                 & \multicolumn{1}{c|}{0.751}          & \multicolumn{1}{c|}{0.745}          & \multicolumn{1}{c|}{\textbf{0.771}} & \multicolumn{1}{c|}{0.713}          & 0.706          \\ \hline
+		synthesize5               & 0.651                                 & \multicolumn{1}{c|}{0.629}          & \multicolumn{1}{c|}{0.683}          & \multicolumn{1}{c|}{0.571}          & \multicolumn{1}{c|}{0.684}          & \textbf{0.691} \\ \hline
+		synthesize6               & 0.701                                 & \multicolumn{1}{c|}{0.715}          & \multicolumn{1}{c|}{0.659}          & \multicolumn{1}{c|}{\textbf{0.767}} & \multicolumn{1}{c|}{0.743}          & 0.754          \\ \hline
+		synthesize7               & 0.730                                 & \multicolumn{1}{c|}{0.721}          & \multicolumn{1}{c|}{\textbf{0.774}} & \multicolumn{1}{c|}{0.751}          & \multicolumn{1}{c|}{0.768}          & 0.741          \\ \hline
+		synthesize8               & 0.644                                 & \multicolumn{1}{c|}{0.686}          & \multicolumn{1}{c|}{0.704}          & \multicolumn{1}{c|}{0.699}          & \multicolumn{1}{c|}{\textbf{0.764}}          & 0.688          \\ \hline
+	\end{tabular}
+	\label{tab01:overall}
+	\caption{Comparison with class-dependent cost in terms of overall GMean, the better algorithm is denoted as bold, synthesize benchmark}
+\end{table}
+
+\begin{table}[!ht]
+	\centering
+\begin{tabular}{|c||c|ccccc|}
+	\hline
+	\multirow{2}{*}{datasets} & \multirow{2}{*}{class-dependent cost} & \multicolumn{5}{c|}{instance-dependent cost}                                                                                                                           \\ \cline{3-7} 
+	&                                       & \multicolumn{1}{c|}{$\alpha$=0.25}         & \multicolumn{1}{c|}{$\alpha$=0.5}          & \multicolumn{1}{c|}{$\alpha$=1}            & \multicolumn{1}{c|}{$\alpha$=2}            & $\alpha$=4            \\ \hline \hline
+segment0                  & 0.957                                 & \multicolumn{1}{c|}{0.966}          & \multicolumn{1}{c|}{0.962}          & \multicolumn{1}{c|}{0.962}          & \multicolumn{1}{c|}{0.972}          & \textbf{0.973} \\ \hline
+segment0-5-1tra           & 0.931                                 & \multicolumn{1}{c|}{0.948}          & \multicolumn{1}{c|}{\textbf{0.975}} & \multicolumn{1}{c|}{0.973}          & \multicolumn{1}{c|}{\textbf{0.975}} & \textbf{0.975} \\ \hline
+segment0-5-2tra           & 0.931                                 & \multicolumn{1}{c|}{0.963}          & \multicolumn{1}{c|}{0.960}          & \multicolumn{1}{c|}{0.949}          & \multicolumn{1}{c|}{\textbf{0.968}} & 0.914          \\ \hline
+segment0-5-3tra           & 0.956                                 & \multicolumn{1}{c|}{0.967}          & \multicolumn{1}{c|}{0.946}          & \multicolumn{1}{c|}{0.970}          & \multicolumn{1}{c|}{0.972}          & \textbf{0.973} \\ \hline
+segment0-5-4tra           & 0.948                                 & \multicolumn{1}{c|}{0.929}          & \multicolumn{1}{c|}{0.946}          & \multicolumn{1}{c|}{0.946}          & \multicolumn{1}{c|}{\textbf{0.952}} & 0.950          \\ \hline
+segment0-5-5tra           & 0.975                                 & \multicolumn{1}{c|}{\textbf{0.976}} & \multicolumn{1}{c|}{0.975}          & \multicolumn{1}{c|}{0.974}          & \multicolumn{1}{c|}{0.974}          & 0.974          \\ \hline
+segment0-5-1tst           & 0.902                                 & \multicolumn{1}{c|}{0.870}          & \multicolumn{1}{c|}{0.887}          & \multicolumn{1}{c|}{\textbf{0.907}} & \multicolumn{1}{c|}{0.901}          & 0.892          \\ \hline
+segment0-5-2tst           & 0.864                                 & \multicolumn{1}{c|}{\textbf{0.869}} & \multicolumn{1}{c|}{\textbf{0.869}} & \multicolumn{1}{c|}{\textbf{0.869}} & \multicolumn{1}{c|}{\textbf{0.869}} & \textbf{0.869} \\ \hline
+segment0-5-3tst           & 0.821                                 & \multicolumn{1}{c|}{\textbf{0.886}} & \multicolumn{1}{c|}{0.883}          & \multicolumn{1}{c|}{0.848}          & \multicolumn{1}{c|}{0.848}          & 0.843          \\ \hline
+segment0-5-4tst           & 0.874                                 & \multicolumn{1}{c|}{\textbf{0.922}} & \multicolumn{1}{c|}{0.908}          & \multicolumn{1}{c|}{0.913}          & \multicolumn{1}{c|}{0.903}          & 0.911          \\ \hline
+segment0-5-5tst           & 0.861                                 & \multicolumn{1}{c|}{\textbf{0.866}} & \multicolumn{1}{c|}{\textbf{0.866}} & \multicolumn{1}{c|}{0.865}          & \multicolumn{1}{c|}{0.863}          & 0.863          \\ \hline
+\end{tabular}
+	\label{tab02:overall}
+	\caption{Comparison with class-dependent cost in terms of overall GMean, the better algorithm is denoted as bold, segment benchmark}
+\end{table}
+
+
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{|c||c|ccccc|}
+		\hline
+		\multirow{2}{*}{datasets} & \multirow{2}{*}{class-dependent cost} & \multicolumn{5}{c|}{instance-dependent cost}                                                                                                                           \\ \cline{3-7} 
+		&                                       & \multicolumn{1}{c|}{$\alpha$=0.25}         & \multicolumn{1}{c|}{$\alpha$=0.5}          & \multicolumn{1}{c|}{$\alpha$=1}            & \multicolumn{1}{c|}{$\alpha$=2}            & $\alpha$=4            \\ \hline \hline
+	yeast1                    & 0.598                                 & \multicolumn{1}{c|}{0.661}          & \multicolumn{1}{c|}{0.655}          & \multicolumn{1}{c|}{0.636}      & \multicolumn{1}{c|}{0.643}      & \textbf{0.671} \\ \hline
+	yeast1-5-1tra             & 0.553                                 & \multicolumn{1}{c|}{\textbf{0.570}} & \multicolumn{1}{c|}{0.537}          & \multicolumn{1}{c|}{0.537}      & \multicolumn{1}{c|}{0.529}      & 0.536          \\ \hline
+	yeast1-5-2tra             & 0.617                                 & \multicolumn{1}{c|}{\textbf{0.623}} & \multicolumn{1}{c|}{0.601}          & \multicolumn{1}{c|}{0.610}      & \multicolumn{1}{c|}{0.619}      & 0.598          \\ \hline
+	yeast1-5-3tra             & \textbf{0.623}                        & \multicolumn{1}{c|}{0.587}          & \multicolumn{1}{c|}{0.584}          & \multicolumn{1}{c|}{0.604}      & \multicolumn{1}{c|}{0.599}      & 0.585          \\ \hline
+	yeast1-5-4tra             & 0.566                                 & \multicolumn{1}{c|}{0.570}          & \multicolumn{1}{c|}{\textbf{0.676}} & \multicolumn{1}{c|}{0.653}      & \multicolumn{1}{c|}{0.650}      & 0.651          \\ \hline
+	yeast1-5-5tra             & \textbf{0.683}                        & \multicolumn{1}{c|}{0.647}          & \multicolumn{1}{c|}{0.598}          & \multicolumn{1}{c|}{0.620}      & \multicolumn{1}{c|}{0.572}      & 0.573          \\ \hline
+	yeast1-5-1tst             & 0.602                                 & \multicolumn{1}{c|}{0.608}          & \multicolumn{1}{c|}{0.612}          & \multicolumn{1}{c|}{0.625}      & \multicolumn{1}{c|}{0.625}      & \textbf{0.637} \\ \hline
+	yeast1-5-2tst             & \textbf{0.632}                        & \multicolumn{1}{c|}{0.619}          & \multicolumn{1}{c|}{0.591}          & \multicolumn{1}{c|}{0.589}      & \multicolumn{1}{c|}{0.629}      & 0.594          \\ \hline
+	yeast1-5-3tst             & 0.455                                 & \multicolumn{1}{c|}{\textbf{0.471}} & \multicolumn{1}{c|}{0.433}          & \multicolumn{1}{c|}{0.447}      & \multicolumn{1}{c|}{0.449}      & 0.431          \\ \hline
+	yeast1-5-4tst             & \textbf{0.554}                        & \multicolumn{1}{c|}{0.502}          & \multicolumn{1}{c|}{0.515}          & \multicolumn{1}{c|}{0.531}      & \multicolumn{1}{c|}{0.509}      & 0.480          \\ \hline
+	yeast1-5-5tst             & 0.492                                 & \multicolumn{1}{c|}{\textbf{0.625}} & \multicolumn{1}{c|}{0.616}          & \multicolumn{1}{c|}{0.591}      & \multicolumn{1}{c|}{0.581}      & 0.578          \\ \hline
+\end{tabular}
+	\label{tab03:overall}
+	\caption{Comparison with class-dependent cost in terms of overall GMean, the better algorithm is denoted as bold, yeast benchmark}
+\end{table}
+
+We conduct the experiment on aforementioned datasets, the performances of our method and comparison method are summarized in Table 2.
 
 \section{Conclusion}
 \end{document}

@@ -113,9 +113,10 @@ def differential_evolution(objective_function, bounds, IR1, test_clf, population
 if __name__=='__main__':
 
         datasets=['synthesize','chess','yeast','segment']
-        test_id=0
-        dataset=datasets[test_id]+'8'
+        test_id=2
+        dataset=datasets[test_id]+'1-5-5tst'
         X,y=read_data.read(datasets[test_id],dataset)
+        alpha=4
 
         line_count = len(X) 
         class_num = len(np.unique(y))
@@ -202,13 +203,14 @@ if __name__=='__main__':
                 #FC=class_dependent_cost*(-((np.abs(p_t-0.5))**alpha)*np.log(np.abs(p_t-0.5)))*(1-p_t)
                 #FC=class_dependent_cost*(-2*(np.abs(p_t-0.5))*np.log(2*np.abs(p_t-0.5)))
                 #
-                alpha=0.000001
+                #alpha=0.000001
                 # if y_pred3!=y_test[j]:
                 #      FC=class_dependent_cost*(1+p_t)
                 # else:
-                # FC=class_dependent_cost*(1+(1-p_t))
+                
+                FC=class_dependent_cost*(1+(1-p_t)**alpha)
                 # FC=class_dependent_cost*(-np.abs(p_t-0.5))*np.log(np.abs(p_t-0.5))*(1-p_t)**alpha
-                FC=class_dependent_cost*(-np.abs(p_t-0.5+alpha))*np.log(np.abs(p_t-0.5+alpha))*(1-p_t)**0.75
+                #FC=class_dependent_cost*(-np.abs(p_t-0.5+alpha))*np.log(np.abs(p_t-0.5+alpha))*(1-p_t)**0.75
                 #print(FC)
 
                 # FC=0.5*class_dependent_cost*(-(np.abs(p_t-alpha))*np.log(np.abs(p_t-alpha))-(np.abs((1-p_t)-alpha))*np.log(np.abs((1-p_t)-alpha)))
@@ -249,9 +251,9 @@ if __name__=='__main__':
         plot_y3 = gmean3
         ax1.plot(plot_x, plot_y1, color='blue',label='no processing')
         ax1.plot(plot_x, plot_y2, color='green',label='class-dependent cost')
-        ax1.plot(plot_x, plot_y3, color='red',label='instance-dependent cost')
+        ax1.plot(plot_x, plot_y3, color='red',label=f'instance-dependent cost, $\\alpha$={alpha}')
         
         ax1.legend(fontsize=legendsize, ncol=ncol) 
-        plt.savefig(f'results/result0/{datasets[test_id]}/{dataset}_instance_dependent_focal_cost.png')
-        plt.show()
+        plt.savefig(f'results/result1/{datasets[test_id]}/{dataset}_instance_dependent_focal_cost_alpha={alpha}.png')
+        #plt.show()
        
