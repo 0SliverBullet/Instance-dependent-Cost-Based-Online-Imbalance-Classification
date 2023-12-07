@@ -66,9 +66,12 @@
 
 \section{Related work}
 
+
+
 \section{Proposed algorithm: Instance Dependent Cost Online Classification}
 
 In this section, we design heuristics instance-dependent cost in online learning. To simplify cost matrix, we only consider the misclassification cost for each class(degree of freedom: $k^2-k$ down to $k-1$) and the misclassification cost for each instance (degree of freedom: $n\times(k^2-k)$ down to $n\times(k-1)$) , where k is number of classes, n is number of instances. 
+
 \subsection{The original structure of the proposed algorithm}
 
 For each prediction, if our classifier predict correctly, we continue to train the classifier by fitting this instance by the class-dependent cost; Otherwise, i.e. the current classifier can not predict this instance correctly, the instance is difficult to the classifier that it can not handle, our current classifier should pay more attention to this instance. We continue to train the classifier by fitting this instance by the heuristics instance-dependent cost.
@@ -150,7 +153,7 @@ The instance-dependent cost is visualized for several values of $\alpha$ $\in$
 prediction error term nears to 1, which contributes a large instance-dependent cost. As
 $p_t$ nears to 1, the prediction error goes to 0 and the instance-dependent cost for well-classified instance is down-weighted to class-dependent cost. (2) The hypothesis parameter $\alpha$ smoothly adjusts the rate at which hard instances are focused on more. Hence, compare with the former definition of prediction error focusing the instances with $p_t$ nears to 0.5, the new defintion of prediction error focuses on the instances with $p_t$ nears to 0, which are considered as hard instances, and slightly adjusted by the hypothesis parameter $\alpha$.
 
-The algorithm with new structure is describe as follows:
+TThe whole process with new structure is summarized in algorithm \ref{alg:Heuristics Instance-dependent Cost Online Classification}.
 
 \begin{algorithm}
 	\caption{Heuristics Instance-dependent Cost Online Classification 2}
@@ -183,6 +186,7 @@ The algorithm with new structure is describe as follows:
 		
 		
 	}
+\label{alg:Heuristics Instance-dependent Cost Online Classification}
 \end{algorithm}
 
 
@@ -201,21 +205,23 @@ Other datasets comes from synthesizing. All the dataset information are summariz
 
 The metric we used is online GMean following , which give instantaneous GMean for each time step. The overall GMean is calculated by simply averaging the GMean on every time steps.
 
-\begin{table}[!ht]
+\begin{table}[!ht] \tiny
 	\centering
-	\begin{tabular}{|l||l|l|l|l|}
-		\hline
-		dataset & IR & \#instance & \#feature & \#class \\ \hline\hline
-		synthesize1 & 5.0 & 4800 & 30 & 2 \\ \hline
-		synthesize2 & 3.0 & 3000 & 10 & 3 \\ \hline
-		synthesize3 & 3.0 & 4000 & 10 & 2 \\ \hline
-		synthesize4 & 1.5 & 5000 & 10 & 2 \\ \hline
-		synthesize5 & 3.0 & 4000 & 10 & 2 \\ \hline
-		contraceptive & 1.889 & 1473 & 9 & 3 \\ \hline
-		segment0 & 6.015 & 2308 & 19 & 2 \\ \hline
-		yeast-0-2-5-6 vs 3-7-8-9 & 9.141 & 1004 & 8 & 2 \\ \hline
-		yeast1 & 2.459 & 1484 & 8 & 2 \\ \hline
-	\end{tabular}
+\begin{tabular}{|l||l|l|l||l||l|l|l||l||l|l|l|} 
+	\hline
+datasets    & IR    & \#ins. & \#fea. & datasets        & IR   & \#ins. & \#fea. & datasets      & IR   & \#ins. & \#fea. \\ \hline \hline
+synthesize1 & 5.00  & 1200       & 10        & segment0        & 6.02 & 2308       & 19        & yeast1        & 2.46 & 1484       & 8         \\ \hline
+synthesize2 & 5.00  & 1200       & 5         & segment0-5-1tra & 6.02 & 1846       & 19        & yeast1-5-1tra & 2.46 & 1187       & 8         \\ \hline
+synthesize3 & 5.00  & 1200       & 10        & segment0-5-2tra & 6.02 & 1846       & 19        & yeast1-5-2tra & 2.46 & 1187       & 8         \\ \hline
+synthesize4 & 10.00 & 1100       & 12        & segment0-5-3tra & 6.02 & 1846       & 19        & yeast1-5-3tra & 2.46 & 1187       & 8         \\ \hline
+synthesize5 & 5.00  & 3000       & 25        & segment0-5-4tra & 6.00 & 1847       & 19        & yeast1-5-4tra & 2.46 & 1187       & 8         \\ \hline
+synthesize6 & 5.00  & 3000       & 50        & segment0-5-5tra & 6.02 & 1847       & 19        & yeast1-5-5tra & 2.45 & 1188       & 8         \\ \hline
+synthesize7 & 5.00  & 4800       & 50        & segment0-5-1tst & 6.00 & 462        & 19        & yeast1-5-1tst & 2.45 & 297        & 8         \\ \hline
+synthesize8 & 5.00  & 4800       & 30        & segment0-5-2tst & 6.00 & 462        & 19        & yeast1-5-2tst & 2.45 & 297        & 8         \\ \hline
+&       &            &           & segment0-5-3tst & 6.00 & 462        & 19        & yeast1-5-3tst & 2.45 & 297        & 8         \\ \hline
+&       &            &           & segment0-5-4tst & 6.09 & 461        & 19        & yeast1-5-4tst & 2.45 & 297        & 8         \\ \hline
+&       &            &           & segment0-5-5tst & 5.98 & 461        & 19        & yeast1-5-5tst & 2.48 & 296        & 8         \\ \hline
+\end{tabular}
 	\label{tab:overview}
 	\caption{Overview of used datasets}
 \end{table}

@@ -116,11 +116,12 @@ if __name__=='__main__':
         test_id=2
         dataset=datasets[test_id]+'1-5-5tst'
         X,y=read_data.read(datasets[test_id],dataset)
-        alpha=4
+        alpha=0.25
 
         line_count = len(X) 
         class_num = len(np.unique(y))
         class_size = np.zeros(class_num)
+
         S = np.zeros([class_num])
         N = np.zeros([class_num])
         cf = np.zeros([class_num, class_num])
@@ -136,8 +137,8 @@ if __name__=='__main__':
         _size = np.zeros(class_num)
         for i in range(class_num):
             _size[i] = len(np.argwhere(y == i))   
-        print(_size)
-
+        print(_size,_size[0]/_size[1],_size[1]/_size[0],line_count,X_train.shape[1],class_num)
+        exit(0)
         test_len=X_test.shape[0]
         class_num=len(np.unique(y))
 
