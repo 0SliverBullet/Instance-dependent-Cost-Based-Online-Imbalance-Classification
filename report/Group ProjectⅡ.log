@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.9.17)  6 DEC 2023 15:18
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.9.17)  14 DEC 2023 09:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -914,68 +914,79 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) [1
 
 {d:/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2]
-<in.png, id=72, 722.7pt x 433.62pt>
+<in.png, id=75, 722.7pt x 433.62pt>
 File: in.png Graphic file (type png)
 <use in.png>
-Package pdftex.def Info: in.png  used on input line 142.
+Package pdftex.def Info: in.png  used on input line 150.
 (pdftex.def)             Requested size: 345.0pt x 206.9972pt.
-
+ [3 <./in.png>]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 191.
-
-[3 <./in.png>]
-Overfull \hbox (65.98604pt too wide) in paragraph at lines 206--222
- [][] 
- []
-
-
-Overfull \hbox (16.55403pt too wide) in paragraph at lines 231--245
- [][] 
- []
+(hyperref)                than one, level fixed on input line 200.
 
 [4]
-Overfull \hbox (37.3545pt too wide) in paragraph at lines 250--267
+Overfull \hbox (65.98604pt too wide) in paragraph at lines 215--231
  [][] 
  []
 
 
-Overfull \hbox (17.47047pt too wide) in paragraph at lines 274--291
+Overfull \hbox (16.55403pt too wide) in paragraph at lines 240--254
  [][] 
  []
 
-[5] [6] (./Group ProjectⅡ.aux)
+
+Overfull \hbox (37.3545pt too wide) in paragraph at lines 259--276
+ [][] 
+ []
+
+
+Overfull \hbox (17.47047pt too wide) in paragraph at lines 283--300
+ [][] 
+ []
+
+[5]
+Overfull \hbox (64.35086pt too wide) in paragraph at lines 332--346
+ [][] 
+ []
+
+[6] [7] (./Group ProjectⅡ.aux)
 Package rerunfilecheck Info: File `"Group ProjectⅡ".out' has not changed.
-(rerunfilecheck)             Checksum: A7F401B3314411C11D9741BA8FE8DC1C;1789.
+(rerunfilecheck)             Checksum: 3D8B866D8528574AC904CCC5097B3692;1931.
  ) 
 Here is how much of TeX's memory you used:
- 26765 strings out of 478268
- 523291 string characters out of 5850345
- 969363 words of memory out of 5000000
- 44362 multiletter control sequences out of 15000+600000
- 487889 words of font info for 117 fonts, out of 8000000 for 9000
+ 26793 strings out of 478268
+ 523681 string characters out of 5850345
+ 986491 words of memory out of 5000000
+ 44370 multiletter control sequences out of 15000+600000
+ 488540 words of font info for 124 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,14n,89p,1015b,502s stack positions out of 10000i,1000n,20000p,200000b,200000s
-{d:/texlive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}<d:/texl
-ive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><d:/texlive/2022/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><d:/texlive/2022/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmmi5.pfb><d:/texlive/2022/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmmi7.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmr10.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmr7.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.p
-fb><d:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb><d:/tex
-live/2022/texmf-dist/fonts/type1/public/cm-super/sfbx0900.pfb><d:/texlive/2022/
-texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb><d:/texlive/2022/texmf-dist
-/fonts/type1/public/cm-super/sfbx1200.pfb><d:/texlive/2022/texmf-dist/fonts/typ
-e1/public/cm-super/sfbx1440.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/
-cm-super/sfrm0500.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/cm-super/s
-frm1000.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pf
-b><d:/texlive/2022/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb><d:/texl
-ive/2022/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb>
-Output written on "Group ProjectⅡ.pdf" (6 pages, 323220 bytes).
+{d:/texlive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}{d:/texl
+ive/2022/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}<d:/texlive/2022/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><d:/texlive/2022/texmf-dis
+t/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><d:/texlive/2022/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmmi10.pfb><d:/texlive/2022/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmmi5.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmmi7.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mr10.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb><d
+:/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb><d:/texlive/2
+022/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><d:/texlive/2022/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb><d:/texlive/2022/texmf-dist/font
+s/type1/public/amsfonts/cm/cmsy7.pfb><d:/texlive/2022/texmf-dist/fonts/type1/pu
+blic/amsfonts/symbols/msbm10.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public
+/cm-super/sfbx0900.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/cm-super/
+sfbx1000.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/cm-super/sfbx1200.p
+fb><d:/texlive/2022/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb><d:/tex
+live/2022/texmf-dist/fonts/type1/public/cm-super/sfrm0500.pfb><d:/texlive/2022/
+texmf-dist/fonts/type1/public/cm-super/sfrm0700.pfb><d:/texlive/2022/texmf-dist
+/fonts/type1/public/cm-super/sfrm1000.pfb><d:/texlive/2022/texmf-dist/fonts/typ
+e1/public/cm-super/sfrm1200.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/
+cm-super/sfrm1728.pfb><d:/texlive/2022/texmf-dist/fonts/type1/public/cm-super/s
+fti1000.pfb>
+Output written on "Group ProjectⅡ.pdf" (7 pages, 375719 bytes).
 PDF statistics:
- 181 PDF objects out of 1000 (max. 8388607)
- 135 compressed objects within 2 object streams
- 28 named destinations out of 1000 (max. 500000)
- 36954 words of extra memory for PDF output out of 42996 (max. 10000000)
+ 227 PDF objects out of 1000 (max. 8388607)
+ 169 compressed objects within 2 object streams
+ 35 named destinations out of 1000 (max. 500000)
+ 39010 words of extra memory for PDF output out of 42996 (max. 10000000)
 

@@ -66,7 +66,12 @@
 
 \section{Related work}
 
+\section{Problem Formulation}
+Generally, considering a data stream $\{X_t\}$, where t $\in$ $\{$1, 2, · · · $\}$ is the test time step and $X_t$ $\in$ $\mathbb{R}^d$ denotes the d-dimensional data feature arrived at time step t, the corresponding $y_t$ to denote the true label of $X_t$ and $y_t$ $\in$ $\{$1, \dots, c$\}$ for c $\geq$ 2, where c is the number of classes, however, the number of samples in each category in the data stream is uneven, i.e. data skewing occurs, online imbalance learning follows the conventional “test-then-train" online learning process: test sample arrives strictly one by one, $X_t$ arrived at t, the aim of online imbalance learning is to predict its label with the latest model as 
 
+$$\hat{y}_t =\Theta_{t-1}(X_t),$$ 
+
+where $\Theta_{t-1}$ is the model trained after time t-1. Then, one can obtain the true label $y_t$ before t + 1, and the new training sample $(X_t, y_t)$ is used to update model $\Theta_{t-1}(\cdot)$  to $\Theta_{t}(\cdot)$. 
 
 \section{Proposed algorithm: Instance Dependent Cost Online Classification}
 
@@ -153,7 +158,7 @@ The instance-dependent cost is visualized for several values of $\alpha$ $\in$
 prediction error term nears to 1, which contributes a large instance-dependent cost. As
 $p_t$ nears to 1, the prediction error goes to 0 and the instance-dependent cost for well-classified instance is down-weighted to class-dependent cost. (2) The hypothesis parameter $\alpha$ smoothly adjusts the rate at which hard instances are focused on more. Hence, compare with the former definition of prediction error focusing the instances with $p_t$ nears to 0.5, the new defintion of prediction error focuses on the instances with $p_t$ nears to 0, which are considered as hard instances, and slightly adjusted by the hypothesis parameter $\alpha$.
 
-TThe whole process with new structure is summarized in algorithm \ref{alg:Heuristics Instance-dependent Cost Online Classification}.
+The whole process with new structure is summarized in algorithm \ref{alg:Heuristics Instance-dependent Cost Online Classification}.
 
 \begin{algorithm}
 	\caption{Heuristics Instance-dependent Cost Online Classification 2}
@@ -234,12 +239,12 @@ synthesize8 & 5.00  & 4800       & 30        & segment0-5-2tst & 6.00 & 462     
 	\centering
 	\begin{tabular}{|c||c|ccccc|}
 		\hline
-		\multirow{2}{*}{datasets} & \multirow{2}{*}{class-dependent cost} & \multicolumn{5}{c|}{instance-dependent cost}                                                                                                                           \\ \cline{3-7} 
-		&                                       & \multicolumn{1}{c|}{$\alpha$=0.25}         & \multicolumn{1}{c|}{$\alpha$=0.5}          & \multicolumn{1}{c|}{$\alpha$=1}            & \multicolumn{1}{c|}{$\alpha$=2}            & $\alpha$=4            \\ \hline \hline
+		\multirow{2}{*}{datasets} & \multirow{2}{*}{class-dependent cost}  &  \multicolumn{5}{c|}{instance-dependent cost}                                                                                                                           \\ \cline{3-7} 
+		&                                & \multicolumn{1}{c|}{$\alpha$=0.25}         & \multicolumn{1}{c|}{$\alpha$=0.5}          & \multicolumn{1}{c|}{$\alpha$=1}            & \multicolumn{1}{c|}{$\alpha$=2}            & $\alpha$=4            \\ \hline \hline
 		synthesize1               & 0.897                                 & \multicolumn{1}{c|}{0.899}          & \multicolumn{1}{c|}{\textbf{0.901}} & \multicolumn{1}{c|}{0.899}          & \multicolumn{1}{c|}{0.899}          & 0.897          \\ \hline
-		synthesize2               & 0.741                                 & \multicolumn{1}{c|}{0.730}          & \multicolumn{1}{c|}{0.656}          & \multicolumn{1}{c|}{\textbf{0.751}} & \multicolumn{1}{c|}{\textbf{0.751}} & 0.745          \\ \hline
-		synthesize3               & 0.831                                 & \multicolumn{1}{c|}{\textbf{0.841}} & \multicolumn{1}{c|}{0.818}          & \multicolumn{1}{c|}{0.809}          & \multicolumn{1}{c|}{0.827}          & 0.833          \\ \hline
-		synthesize4               & 0.757                                 & \multicolumn{1}{c|}{0.751}          & \multicolumn{1}{c|}{0.745}          & \multicolumn{1}{c|}{\textbf{0.771}} & \multicolumn{1}{c|}{0.713}          & 0.706          \\ \hline
+		synthesize2               & 0.741                               & \multicolumn{1}{c|}{0.730}          & \multicolumn{1}{c|}{0.656}          & \multicolumn{1}{c|}{\textbf{0.751}} & \multicolumn{1}{c|}{\textbf{0.751}} & 0.745          \\ \hline
+		synthesize3               & 0.831                                  & \multicolumn{1}{c|}{\textbf{0.841}} & \multicolumn{1}{c|}{0.818}          & \multicolumn{1}{c|}{0.809}          & \multicolumn{1}{c|}{0.827}          & 0.833          \\ \hline
+		synthesize4               & 0.757                                & \multicolumn{1}{c|}{0.751}          & \multicolumn{1}{c|}{0.745}          & \multicolumn{1}{c|}{\textbf{0.771}} & \multicolumn{1}{c|}{0.713}          & 0.706          \\ \hline
 		synthesize5               & 0.651                                 & \multicolumn{1}{c|}{0.629}          & \multicolumn{1}{c|}{0.683}          & \multicolumn{1}{c|}{0.571}          & \multicolumn{1}{c|}{0.684}          & \textbf{0.691} \\ \hline
 		synthesize6               & 0.701                                 & \multicolumn{1}{c|}{0.715}          & \multicolumn{1}{c|}{0.659}          & \multicolumn{1}{c|}{\textbf{0.767}} & \multicolumn{1}{c|}{0.743}          & 0.754          \\ \hline
 		synthesize7               & 0.730                                 & \multicolumn{1}{c|}{0.721}          & \multicolumn{1}{c|}{\textbf{0.774}} & \multicolumn{1}{c|}{0.751}          & \multicolumn{1}{c|}{0.768}          & 0.741          \\ \hline
@@ -297,5 +302,55 @@ segment0-5-5tst           & 0.861                                 & \multicolumn
 
 We conduct the experiment on aforementioned datasets, the performances of our method and comparison method are summarized in Table 2.
 
+
+For the second aspect, the prediction error is redefined as: 
+
+\begin{equation}
+	\text{prediction error} = (1 - p_t)^\alpha,
+\end{equation}
+where $p_t$ is the classification probability as the true label, defined as:
+
+\begin{equation}
+	p_t = 
+	\begin{cases}
+		p, \ \text{if y=1}\\
+		1-p, \ \text{if y=0}\\
+	\end{cases}
+\end{equation}
+In the above y $\in$ $\{ 0, 1\}$ specifies the ground-truth class and p $\in$ [0, 1] is the model's estimated probability for the class with label y = 1.
+
+Then the instance-dependent cost is redefined as 
+\begin{equation}
+	\text{instance-dependent cost}= (\text{threshold}+ \text{prediction error})\times \text{class-dependent cost}
+\end{equation}
+
+$$\hat{y}_t =arg\ \text{max} \Theta_{t-1}(X_t)=arg\ \text{max} \sum_{i=1}^{42} \text{weight}_{i,t} \times \theta_{i,t-1}(X_t)$$
+where $\text{weight}_{i,t}=\frac{\text{gmean}_{i,t-1}}{\sum_{j=1}^{42}\text{gmean}_{j,t-1}}$ 
+
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{|c||c|c|ccccc|}
+		\hline
+		\multirow{2}{*}{datasets} & \multirow{2}{*}{class-dependent cost}  & \multirow{2}{*}{ensemble} & \multicolumn{5}{c|}{instance-dependent cost}                                                                                                                           \\ \cline{4-8} 
+		&          &                             & \multicolumn{1}{c|}{$\alpha$=0.25}         & \multicolumn{1}{c|}{$\alpha$=0.5}          & \multicolumn{1}{c|}{$\alpha$=1}            & \multicolumn{1}{c|}{$\alpha$=2}            & $\alpha$=4            \\ \hline \hline
+		synthesize1               & 0.897     & \textbf{0.902}                             & \multicolumn{1}{c|}{0.899}          & \multicolumn{1}{c|}{0.901} & \multicolumn{1}{c|}{0.899}          & \multicolumn{1}{c|}{0.899}          & 0.897          \\ \hline
+		synthesize2               & 0.741     & 0.744                             & \multicolumn{1}{c|}{0.730}          & \multicolumn{1}{c|}{0.656}          & \multicolumn{1}{c|}{\textbf{0.751}} & \multicolumn{1}{c|}{\textbf{0.751}} & 0.745          \\ \hline
+		synthesize3               & 0.831      & \textbf{0.855}                              & \multicolumn{1}{c|}{0.841} & \multicolumn{1}{c|}{0.818}          & \multicolumn{1}{c|}{0.809}          & \multicolumn{1}{c|}{0.827}          & 0.833          \\ \hline
+		synthesize4               & 0.757         & \textbf{0.791}                          & \multicolumn{1}{c|}{0.751}          & \multicolumn{1}{c|}{0.745}          & \multicolumn{1}{c|}{0.771} & \multicolumn{1}{c|}{0.713}          & 0.706          \\ \hline
+		synthesize5               & 0.651         & \textbf{0.712}                           & \multicolumn{1}{c|}{0.629}          & \multicolumn{1}{c|}{0.683}          & \multicolumn{1}{c|}{0.571}          & \multicolumn{1}{c|}{0.684}          & 0.691 \\ \hline
+		synthesize6               & 0.701         & \textbf{0.771}                           & \multicolumn{1}{c|}{0.715}          & \multicolumn{1}{c|}{0.659}          & \multicolumn{1}{c|}{0.767} & \multicolumn{1}{c|}{0.743}          & 0.754          \\ \hline
+		synthesize7               & 0.730          & \textbf{0.806}                         & \multicolumn{1}{c|}{0.721}          & \multicolumn{1}{c|}{0.774} & \multicolumn{1}{c|}{0.751}          & \multicolumn{1}{c|}{0.768}          & 0.741          \\ \hline
+		synthesize8               & 0.644            & \textbf{0.769}                        & \multicolumn{1}{c|}{0.686}          & \multicolumn{1}{c|}{0.704}          & \multicolumn{1}{c|}{0.699}          & \multicolumn{1}{c|}{0.764}          & 0.688          \\ \hline
+	\end{tabular}
+	\label{tab04:overall}
+	\caption{Comparison with class-dependent cost in terms of overall GMean, the better algorithm is denoted as bold, synthesize benchmark}
+\end{table}
 \section{Conclusion}
+Then the instance-dependent cost is redefined as 
+\begin{equation}
+	\text{instance-dependent cost}= (\text{threshold}+ \text{prediction error})\times \text{class-dependent cost}
+\end{equation}
+
+$$\hat{y}_t =arg\ \text{max} \Theta_{t-1}(X_t)=arg\ \text{max} \sum_{i=1}^{42} \text{weight}_{i,t} \times \theta_{i,t-1}(X_t)$$
+where $\text{weight}_{i,t}=\frac{\text{gmean}_{i,t-1}}{\sum_{j=1}^{42}\text{gmean}_{j,t-1}}$ 
 \end{document}
