@@ -41,7 +41,7 @@ alpha=1.00
 buffer_len=100
 np.random.seed(1234)
 bounds = (0, 1)
-pretrain = 1
+pretrain = 200
 sample_x=np.zeros(buffer_len)
 sample_y=np.zeros(buffer_len)
 def initialize1():
@@ -114,8 +114,8 @@ if __name__=='__main__':
         
         threshold=0.0
         datasets=['synthesize','chess','yeast','segment']
-        test_id=3
-        dataset=datasets[test_id]+'0-5-5tst'
+        test_id=0
+        dataset=datasets[test_id]+'6'
         X,y=read_data.read(datasets[test_id],dataset)
         alpha=0.25
 
@@ -1150,6 +1150,6 @@ if __name__=='__main__':
         ax1.plot(plot_x, plot_y3, color='red',label=f'instance-dependent cost')
         
         ax1.legend(fontsize=legendsize, ncol=ncol) 
-        plt.savefig(f'results/result1/{datasets[test_id]}/{dataset}_instance_dependent_focal_cost.png')
+        #plt.savefig(f'results/result1/{datasets[test_id]}/{dataset}_instance_dependent_focal_cost.png')
         plt.show()
        

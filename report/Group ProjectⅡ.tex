@@ -2,7 +2,7 @@
 \usepackage{multirow}
 
 %\usepackage{PRIMEarxiv}
-
+\usepackage{amsfonts}
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -351,6 +351,77 @@ Then the instance-dependent cost is redefined as
 	\text{instance-dependent cost}= (\text{threshold}+ \text{prediction error})\times \text{class-dependent cost}
 \end{equation}
 
-$$\hat{y}_t =arg\ \text{max} \Theta_{t-1}(X_t)=arg\ \text{max} \sum_{i=1}^{42} \text{weight}_{i,t} \times \theta_{i,t-1}(X_t)$$
-where $\text{weight}_{i,t}=\frac{\text{gmean}_{i,t-1}}{\sum_{j=1}^{42}\text{gmean}_{j,t-1}}$ 
+$$\hat{y}_t =\mathrm{arg\ }  \underset{Label}{\mathrm{max}} \mathbf{\Theta}_{t-1}(\mathbf{X}_t)=\mathrm{arg\ }  \underset{Label}{\mathrm{max}}  \sum_{i=1}^{42} w_{i,t} \mathbf{\Theta}_{i,t-1}(\mathbf{X}_t)$$
+where $w_{i,t}=\frac{\text{gmean}_{i,t-1}}{\sum_{j=1}^{42}\text{gmean}_{j,t-1}}$, $\mathbf{\Theta}_{i,t-1}$ is the $i^{th}$ base classifier obtained at timestep $t-1$, $\mathbf{\Theta}_{i,t-1}(\mathbf{X}_t)$ outputs a vector containing the probability distribution of each predicted label.
+
+
+\begin{algorithm}
+	\caption{Mass and Elite Strategy Based Instance-dependent Cost Online Classification(MAESIC)}
+	\KwIn{Input data, Input Labels}
+	\KwOut{Prediction}
+	Initialization: $\gamma\leftarrow \mathrm{decay\ rate}$, $N \leftarrow \mathrm{num\ of \ baseclassifier}$
+	%, $\mathrm{threshold} \leftarrow \{0.0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4, 2.8\}$ $\alpha %\leftarrow \{ 0.125, 0.25, 0.5, 1, 2, 4, 8 \}$
+	
+	\While{Have more samples}{
+		$t \leftarrow \mathrm{timestep}$  
+		
+		datum, label $\leftarrow$ next sample
+		
+		$\rho$ ← a random number $\in$ [0, 1]
+		
+		%\eIf{$\rho <e^{-\frac{\varDelta f\left( X \right)}{T_n}} $ }{
+		\eIf{$\rho <e^{-\gamma t}$ }{
+		 	$\mathbb{S} \leftarrow \{1,2,...,N\}$    //mass strategy
+		}
+	        {
+	        	$\mathbb{S} \leftarrow \mathrm{arg\ } \underset{\text{base indices}, j=1,2,..N }{\max_{\substack{i_1, i_2, \ldots, i_K \\ }}} \text{gmean}_{j,t-1}$        	
+	        	//elite strategy
+	    }
+        $w_{i,t}\leftarrow \frac{\text{gmean}_{i,t-1}}{\underset{j \in \mathbb{S}}{\sum}\text{gmean}_{j,t-1}}, i \in \mathbb{S}$ 
+        
+        $\hat{y}_t \leftarrow \mathrm{arg\ }  \underset{Label}{\mathrm{max}} \mathbf{\Theta}_{t-1}(\mathbf{X}_t)=\mathrm{arg\ }  \underset{Label}{\mathrm{max}}  \underset{i \in \mathbb{S}}{\sum} w_{i,t} \mathbf{\Theta}_{i,t-1}(\mathbf{X}_t)$
+        
+        
+		
+		$y_t \leftarrow$ the true label of this sample
+		
+		 
+		 
+		 
+		update current ratio of class $y_t$: $R_{y_t} \leftarrow \frac{\text{\# of current samples with label}\ y_t}{\text{\# of all current samples}}$ 
+		
+		class-dependent cost  $\leftarrow \frac{1}{R_{y_t}}$
+		
+		$p_{t,i}\leftarrow [\mathbf{\Theta}_{i,t-1}(\mathbf{X}_t)]_{y_t},i \in \{1,2,..,N\}$ 
+		
+		$\text{prediction error}_i \leftarrow (1-p_{t,i})^{\alpha_i},i \in \{1,2,..,N\}$
+		
+		$\text{instance-dependent cost}_i\leftarrow(\text{threshold}_i+\text{prediction error}_i)\text{class-dependent cost},i \in \{1,2,..,N\}$ 
+		
+		$\mathbf{\Theta}_{i,t} \leftarrow \text{train}(\mathbf{\Theta}_{i,t-1},\text{instance-dependent cost}_i),i \in \{1,2,..,N\}$
+	
+		
+		
+	}
+	\label{alg:Mass and Elite Strategy Based Instance-dependent Cost Online Classification}
+	Note that $\mathbf{\Theta}_{i,t-1}$ is the $i^{th}$ base classifier obtained at timestep $t-1$, $\mathbf{\Theta}_{i,t-1}(\mathbf{X}_t)$ outputs a vector containing the probability distribution of each predicted label
+\end{algorithm}
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{|c||c|cc|}
+		\hline
+		\multirow{2}{*}{datasets} & \multirow{2}{*}{class-dependent cost}  &\multicolumn{2}{c|}{instance-dependent cost}                                                                                                                           \\ \cline{3-4} 
+		&                                      & \multicolumn{1}{c|}{Mass Strategy}                     & Mass and Elite Strategy            \\ \hline \hline
+		synthesize1               & 0.897                            & \multicolumn{1}{c|}{\textbf{0.907}}          & \textbf{0.907}          \\ \hline
+		synthesize2               & 0.741                        & \multicolumn{1}{c|}{0.799}    & \textbf{0.820}         \\ \hline
+		synthesize3               & 0.831                         & \multicolumn{1}{c|}{\textbf{0.851}}   & 0.848          \\ \hline
+		synthesize4               & 0.757                        & \multicolumn{1}{c|}{\textbf{0.773}}           & 0.758          \\ \hline
+		synthesize5               & 0.651                      & \multicolumn{1}{c|}{0.734}          & \textbf{0.744} \\ \hline
+		synthesize6               & 0.701                          & \multicolumn{1}{c|}{\textbf{0.793}}            & 0.780          \\ \hline
+		synthesize7               & 0.730                   & \multicolumn{1}{c|}{\textbf{0.825}}               & 0.820          \\ \hline
+		synthesize8               & 0.644             & \multicolumn{1}{c|}{0.778}            & \textbf{0.796}          \\ \hline
+	\end{tabular}
+	\label{tab5:overall}
+	\caption{Comparison with class-dependent cost in terms of overall GMean, the better algorithm is denoted as bold, synthesize benchmark}
+\end{table}
 \end{document}
