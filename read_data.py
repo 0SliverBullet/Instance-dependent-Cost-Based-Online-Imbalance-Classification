@@ -4,8 +4,10 @@ from skmultiflow.data import FileStream
 import csv
 import scipy.io as sio
 import warnings
-
-
+dictionary={}
+dictionary['synthesize'] = list(map(str, range(1, 9)))
+dictionary['yeast'] = ['1']+[f'1-5-{i}tra' for i in range(1, 6)] + [f'1-5-{i}tst' for i in range(1, 6)]
+dictionary['segment']=['0']+[f'0-5-{i}tra' for i in range(1, 6)] + [f'0-5-{i}tst' for i in range(1, 6)]
 # silence the warning
 warnings.filterwarnings('ignore')
 warnings.warn('DelftStack')
