@@ -37,7 +37,7 @@ max_epsilon = 1.0             # Exploration probability at start
 min_epsilon = 0.05            # Minimum exploration probability 
 decay_rate = 0.0005            # Exponential decay rate for exploration prob
 pretrain = 1
-iteration= 10
+iteration= 1
 
 def initialize1():
     for i in range(POPSIZE):
@@ -57,8 +57,8 @@ def initialize_metric(n_classifier,class_num, test_len):
 
 if __name__=='__main__':
         
-        datasets=['synthesize','yeast','segment','chess']
-        for test_id in range(0,3):
+        datasets=['yeast','segment','synthesize','chess']
+        for test_id in range(1,3):
             for test_subid in read_data.dictionary[datasets[test_id]]:            
                     dataset=datasets[test_id]+test_subid
                     X,y=read_data.read(datasets[test_id],dataset)
@@ -66,18 +66,20 @@ if __name__=='__main__':
                     line_count = len(X) 
                     class_num = len(np.unique(y))
                     class_size = np.zeros(class_num)
+                    class_size_init = copy.deepcopy(class_size)
                     pretrain = 1
                     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1-pretrain/(line_count-1), random_state=42)
                     for i in range(class_num):
                         class_size[i] = len(np.argwhere(y_train == i))
                     nb_all=len(y)
 
-                    _size = np.zeros(class_num)
-                    for i in range(class_num):
-                        _size[i] = len(np.argwhere(y == i))   
+                    # _size = np.zeros(class_num)
+                    # for i in range(class_num):
+                    #     _size[i] = len(np.argwhere(y == i))   
                     # print(_size,_size[0]/_size[1],_size[1]/_size[0],line_count,X_train.shape[1],class_num)
+                    
                     test_len=X_test.shape[0]
-                    class_num=len(np.unique(y))
+
                     Gmean0_total=[]
                     Gmean1_total=[]
                     Gmean2_total=[]
@@ -86,14 +88,15 @@ if __name__=='__main__':
                     S0, N0, cf0, recall0, gmean0, gmean0_list = initialize_metric(bias,class_num,test_len)
                     S1, N1, cf1, recall1, gmean1, gmean1_list = initialize_metric(n_base_classifier,class_num,test_len)
 
-                    file_path = f'results/result6/{datasets[test_id]}/{dataset}.txt'
+                    file_path = f'results/result8/{datasets[test_id]}/{dataset}.txt'
 
                     # 打开文件，如果文件不存在则会创建新文件
                     with open(file_path, "w") as file:
                             for iter in range(iteration):
                                     print(iter)
                                     file.write(str(iter)+"\n")
-                                    individual.clear()
+                                    class_size = copy.deepcopy(class_size_init)
+                                    individual = []
                                     for i in range(POPSIZE+1):
                                             a=indi()
                                             a.x=np.zeros((DIMENSION,))
@@ -129,7 +132,7 @@ if __name__=='__main__':
                                             
                                             epsilon = min_epsilon + (max_epsilon - min_epsilon)*np.exp(-decay_rate*j)
                                             random_int = random.uniform(0,1)
-                                            # if random_int > greater than epsilon -->  elite strategy
+                                            # # if random_int > greater than epsilon -->  elite strategy
                                             # if random_int > epsilon:
                                             #         top_indices = np.argsort(gmean1[:, j-1])[-len(threshold):][::-1]
                                             #         # max_index = np.argmax(gmean1[:, j-1])
@@ -147,8 +150,8 @@ if __name__=='__main__':
 
                                             y_pred_ensemble = 1 if t1 > t0 else 0
 
-                                            print(j,t0,t1,y_pred_ensemble,y_test[j],epsilon)
-
+                                            #print(j,t0,t1,y_pred_ensemble,y_test[j],epsilon)
+                                            # print(j, class_size)
                                             file.write(str(j)+" "+str(t0)+" "+str(t1)+" "+str(y_pred_ensemble)+" "+str(y_test[j])+" "+str(epsilon)+"\n")
                                             #print(j)
 
@@ -245,7 +248,7 @@ if __name__=='__main__':
                                     
                             ax1.legend(fontsize=legendsize, ncol=ncol)
 
-                            plt.savefig(f'results/result6/{datasets[test_id]}/{dataset}_MAES_instance_dependent_focal_cost.png')
+                            plt.savefig(f'results/result8/{datasets[test_id]}/{dataset}_MAES_instance_dependent_focal_cost.png')
                             #plt.show()
                             print(f"Data has been written to {file_path}")    
        
