@@ -11,6 +11,6 @@
 
 `12/28`: compare MSIC (18) with MAESIC (12): **MSIC is slightly better**.
 
- ![image-20231229101508470](D:\SUSTech\Junior\Fall\创新实践Ⅱ\Instance-dependent Cost Based Online Imbalance Classification\Instance-dependent-Cost-Based-Online-Imbalance-Classification\resources\image-20231229101508470.png)
+ ![image-20231229101508470](resources\image-20231229101508470.png)
 
 `12/29`: What else? How about...?
