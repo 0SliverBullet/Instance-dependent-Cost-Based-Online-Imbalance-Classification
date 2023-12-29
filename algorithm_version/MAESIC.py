@@ -37,7 +37,7 @@ max_epsilon = 1.0             # Exploration probability at start
 min_epsilon = 0.05            # Minimum exploration probability 
 decay_rate = 0.0005            # Exponential decay rate for exploration prob
 pretrain = 1
-iteration= 1
+iteration= 10
 
 def initialize1():
     for i in range(POPSIZE):
@@ -58,7 +58,7 @@ def initialize_metric(n_classifier,class_num, test_len):
 if __name__=='__main__':
         
         datasets=['yeast','segment','synthesize','chess']
-        for test_id in range(1,3):
+        for test_id in range(0,3):
             for test_subid in read_data.dictionary[datasets[test_id]]:            
                     dataset=datasets[test_id]+test_subid
                     X,y=read_data.read(datasets[test_id],dataset)
@@ -132,21 +132,21 @@ if __name__=='__main__':
                                             
                                             epsilon = min_epsilon + (max_epsilon - min_epsilon)*np.exp(-decay_rate*j)
                                             random_int = random.uniform(0,1)
-                                            # # if random_int > greater than epsilon -->  elite strategy
-                                            # if random_int > epsilon:
-                                            #         top_indices = np.argsort(gmean1[:, j-1])[-len(threshold):][::-1]
-                                            #         # max_index = np.argmax(gmean1[:, j-1])
-                                            #         # t0= y_pred_proba[max_index+bias][0][0] 
-                                            #         # t1= y_pred_proba[max_index+bias][0][1]
-                                            #         weight_sum = sum(gmean1[k][j-1] for k in top_indices)
-                                            #         t0 = sum(y_pred_proba[k+bias][0][0] * (gmean1[k][j-1] + 1/len(threshold)) / (weight_sum + 1) for k in top_indices) 
-                                            #         t1 = sum(y_pred_proba[k+bias][0][1] * (gmean1[k][j-1] + 1/len(threshold)) / (weight_sum + 1) for k in top_indices)
-                                            # # else --> mass strategy
-                                            # else:
-                                            weight_sum = sum(gmean1[k][j-1] for k in range(n_base_classifier))
-                                            weight = [(gmean1[k][j-1] + 1/n_base_classifier) / (weight_sum + 1) for k in range(n_base_classifier)]
-                                            t0 = sum(y_pred_proba[k][0][0] * weight[k-bias] for k in range(bias, bias + n_base_classifier)) 
-                                            t1 = sum(y_pred_proba[k][0][1] * weight[k-bias] for k in range(bias, bias + n_base_classifier)) 
+                                            # if random_int > greater than epsilon -->  elite strategy
+                                            if random_int > epsilon:
+                                                    top_indices = np.argsort(gmean1[:, j-1])[-len(threshold):][::-1]
+                                                    # max_index = np.argmax(gmean1[:, j-1])
+                                                    # t0= y_pred_proba[max_index+bias][0][0] 
+                                                    # t1= y_pred_proba[max_index+bias][0][1]
+                                                    weight_sum = sum(gmean1[k][j-1] for k in top_indices)
+                                                    t0 = sum(y_pred_proba[k+bias][0][0] * (gmean1[k][j-1] + 1/len(threshold)) / (weight_sum + 1) for k in top_indices) 
+                                                    t1 = sum(y_pred_proba[k+bias][0][1] * (gmean1[k][j-1] + 1/len(threshold)) / (weight_sum + 1) for k in top_indices)
+                                            # else --> mass strategy
+                                            else:
+                                                    weight_sum = sum(gmean1[k][j-1] for k in range(n_base_classifier))
+                                                    weight = [(gmean1[k][j-1] + 1/n_base_classifier) / (weight_sum + 1) for k in range(n_base_classifier)]
+                                                    t0 = sum(y_pred_proba[k][0][0] * weight[k-bias] for k in range(bias, bias + n_base_classifier)) 
+                                                    t1 = sum(y_pred_proba[k][0][1] * weight[k-bias] for k in range(bias, bias + n_base_classifier)) 
 
                                             y_pred_ensemble = 1 if t1 > t0 else 0
 
