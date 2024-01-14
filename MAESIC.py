@@ -58,6 +58,7 @@ def initialize_metric(n_classifier,class_num, test_len):
 if __name__=='__main__':
         
         datasets=['yeast','segment','synthesize','chess']
+        result_folder='result8'
         for test_id in range(0,3):
             for test_subid in read_data.dictionary[datasets[test_id]]:            
                     dataset=datasets[test_id]+test_subid
@@ -88,7 +89,7 @@ if __name__=='__main__':
                     S0, N0, cf0, recall0, gmean0, gmean0_list = initialize_metric(bias,class_num,test_len)
                     S1, N1, cf1, recall1, gmean1, gmean1_list = initialize_metric(n_base_classifier,class_num,test_len)
 
-                    file_path = f'results/result8/{datasets[test_id]}/{dataset}.txt'
+                    file_path = f'results/{result_folder}/{datasets[test_id]}/{dataset}.txt'
 
                     # 打开文件，如果文件不存在则会创建新文件
                     with open(file_path, "w") as file:
@@ -150,7 +151,7 @@ if __name__=='__main__':
 
                                             y_pred_ensemble = 1 if t1 > t0 else 0
 
-                                            #print(j,t0,t1,y_pred_ensemble,y_test[j],epsilon)
+                                            print(j,t0,t1,y_pred_ensemble,y_test[j],epsilon)
                                             # print(j, class_size)
                                             file.write(str(j)+" "+str(t0)+" "+str(t1)+" "+str(y_pred_ensemble)+" "+str(y_test[j])+" "+str(epsilon)+"\n")
                                             #print(j)
@@ -248,7 +249,7 @@ if __name__=='__main__':
                                     
                             ax1.legend(fontsize=legendsize, ncol=ncol)
 
-                            plt.savefig(f'results/result8/{datasets[test_id]}/{dataset}_MAES_instance_dependent_focal_cost.png')
+                            plt.savefig(f'results/{result_folder}/{datasets[test_id]}/{dataset}_MAES_instance_dependent_focal_cost.png')
                             #plt.show()
                             print(f"Data has been written to {file_path}")    
        
